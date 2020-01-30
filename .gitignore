@@ -1,0 +1,13 @@
+*.bin
+*.crf
+*.d
+*.o
+*.map
+*.htm
+*.khuang
+*.scvd
+*.dep
+*.iex
+*.axf
+*.lnp
+*.txt
