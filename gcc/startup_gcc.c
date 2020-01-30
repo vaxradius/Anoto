@@ -45,6 +45,8 @@
 //*****************************************************************************
 
 #include <stdint.h>
+#include <errno.h>
+
 
 //*****************************************************************************
 //
@@ -110,7 +112,20 @@ extern int main(void);
 //
 //*****************************************************************************
 __attribute__ ((section(".stack")))
-static uint32_t g_pui32Stack[1024];
+static uint32_t g_pui32Stack[1024*15];
+#define MAX_HEAP_SIZE (1024*50)
+static char mem_array[MAX_HEAP_SIZE]={0};
+static char *_cur_brk = mem_array;
+void *_sbrk_r(struct _reent *reent, ptrdiff_t diff)
+{
+    char *_old_brk = _cur_brk;
+    if ((_cur_brk + diff) > (mem_array+MAX_HEAP_SIZE)) {
+        errno = ENOMEM;
+        return (void *)-1;
+    }
+    _cur_brk += diff;
+    return _old_brk;
+}
 
 //*****************************************************************************
 //

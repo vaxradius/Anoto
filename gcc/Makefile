@@ -49,6 +49,8 @@ TOOLCHAIN ?= arm-none-eabi
 PART = apollo2
 CPU = cortex-m4
 FPU = fpv4-sp-d16
+# Default to FPU hardware calling convention.  However, some customers and/or
+# applications may need the software calling convention.
 #FABI = softfp
 FABI = hard
 
@@ -80,23 +82,37 @@ all clean:
 else
 
 DEFINES = -DPART_$(PART)
+DEFINES+= -D__FPU_PRESENT
 DEFINES+= -DAM_PART_APOLLO2
+DEFINES+= -DUNITY_INCLUDE_CONFIG_H
+DEFINES+= -DAM_UTIL_FAULTISR_PRINT
 DEFINES+= -DAM_PACKAGE_BGA
 DEFINES+= -Dgcc
 
-INCLUDES = -I../../../../..
+INCLUDES = -I../../../../../mcu/apollo2
+INCLUDES+= -I../../../../..
+INCLUDES+= -I../src
+INCLUDES+= -I../../../../../CMSIS/AmbiqMicro/Include
 INCLUDES+= -I../../../../../utils
-INCLUDES+= -I../../../../../mcu/apollo2
 INCLUDES+= -I../../../../../devices
 INCLUDES+= -I../../../bsp
-INCLUDES+= -I../src
+INCLUDES+= -I../../../../..CMSIS/ARM/Include
+INCLUDES+= -I../../../../../CMSIS/ARM/Include
+
+INCLUDES+= -I../../../../../devices
 
 VPATH = ../../../../../utils
+VPATH+=:../../../../../devices
 VPATH+=:../src
 
-SRC = ios_fifo.c
+SRC = AudioDriver.c
+SRC += ios_fifo.c
+
+
 SRC += am_util_delay.c
+SRC += am_util_faultisr.c
 SRC += am_util_stdio.c
+SRC += am_util_id.c
 SRC += startup_gcc.c
 
 CSRC = $(filter %.c,$(SRC))
@@ -110,14 +126,16 @@ DEPS+= $(ASRC:%.s=$(CONFIG)/%.d)
 
 LIBS = ../../../../../mcu/apollo2/hal/gcc/bin/libam_hal.a
 LIBS += ../../../bsp/gcc/bin/libam_bsp.a
+LIBS += ../lib/libarm_cortexM4lf_math_NN.a
+LIBS += ../lib/librelajetnn_all.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
-CFLAGS+= -ffunction-sections -fdata-sections -fomit-frame-pointer
+CFLAGS+= -ffunction-sections -fdata-sections
 CFLAGS+= -MMD -MP -std=c99 -Wall -g
-CFLAGS+= -O0
+CFLAGS+= -O3
 CFLAGS+= $(DEFINES)
 CFLAGS+= $(INCLUDES)
-CFLAGS+= 
+CFLAGS+= -specs=nano.specs -specs=nosys.specs
 
 LFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 LFLAGS+= -nostartfiles -static
@@ -165,11 +183,11 @@ clean:
 
 $(CONFIG)/%.d: ;
 
-../../../../../mcu/apollo2/hal/gcc/bin/libam_hal.a:
-	$(MAKE) -C ../../../../../mcu/apollo2/hal
-
 ../../../bsp/gcc/bin/libam_bsp.a:
 	$(MAKE) -C ../../../bsp
+
+../../../../../mcu/apollo2/hal/gcc/bin/libam_hal.a:
+	$(MAKE) -C ../../../../../mcu/apollo2/hal
 
 # Automatically include any generated dependencies
 -include $(DEPS)

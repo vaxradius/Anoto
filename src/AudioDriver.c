@@ -2,11 +2,13 @@
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
+#ifndef gcc
 #define CHANNEL_BLOCK_SIZE_IN_SAMPLES   (35*1024)
 int16_t i16RAW[CHANNEL_BLOCK_SIZE_IN_SAMPLES];
 int16_t i16SPP[CHANNEL_BLOCK_SIZE_IN_SAMPLES];
 uint32_t g_sampleIndex = 0;
 bool print_flag = 0;
+#endif
 
 #define FIFOTHR 		64
 #define BUF_SIZE		128
@@ -17,6 +19,17 @@ float g_buffer[BUF_SIZE];
 uint32_t u32PDMPingpong = 0;
 uint16_t PDMBuf_idx = 0;
 
+void nr_process(uint32_t u32PDMpg)
+{
+	for (int i=0; i< BUF_SIZE; i++) 
+		g_buffer[i] = i16PDMBuf[(u32PDMpg-1)%2][i];
+#ifdef gcc	
+	relajet_nr_go(g_buffer);
+#endif	
+	for (int i = 0; i < BUF_SIZE; ++i)
+		i16PDMBuf[(u32PDMpg-1)%2][i] = (g_buffer[i]);
+}
+#ifndef gcc
 void print_audio_data(void)
 {
 	uint32_t i = 0;
@@ -58,6 +71,7 @@ void print_audio_data(void)
 	}
 
 }
+#endif
 //*****************************************************************************
 //
 // PDM Interrupt Service Routine (ISR)

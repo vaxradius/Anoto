@@ -620,9 +620,8 @@ main(void)
 			am_hal_interrupt_master_set(ui32IntStatus);
 			am_hal_gpio_out_bit_clear(8);
 			
-			//memcpy(i16RAW+g_sampleIndex ,i16PDMBuf[(u32PDMpg-1)%2], BUF_SIZE *2);
-
-			//numWritten = am_hal_ios_fifo_write(&g_pui8TestBuf[g_sendIdx], SENSOR0_DATA_SIZE);
+			nr_process(u32PDMpg);
+			am_hal_gpio_out_bit_set(8);
 			numWritten = am_hal_ios_fifo_write((uint8_t *)i16PDMBuf[(u32PDMpg-1)%2], AM_TEST_REF_BUF_SIZE*2);
 
 			
@@ -636,7 +635,7 @@ main(void)
 					inform_host();
 				}
 			}
-			am_hal_gpio_out_bit_set(8);
+			
 		}
 		else
 		{
