@@ -107,6 +107,7 @@ VPATH+=:../src
 
 SRC = AudioDriver.c
 SRC += ios_fifo.c
+SRC += sbc.c
 
 
 SRC += am_util_delay.c

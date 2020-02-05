@@ -595,6 +595,7 @@ main(void)
     // Enable the IOS. Choose the correct protocol based on USE_SPI
     //
     ios_set_up(USE_SPI);
+    SBC_init();
 
     //start_sensors();
     
@@ -621,8 +622,10 @@ main(void)
 			am_hal_gpio_out_bit_clear(8);
 			
 			nr_process(u32PDMpg);
+			SBC_process(u32PDMpg);
+
 			am_hal_gpio_out_bit_set(8);
-			numWritten = am_hal_ios_fifo_write((uint8_t *)i16PDMBuf[(u32PDMpg-1)%2], AM_TEST_REF_BUF_SIZE*2);
+			numWritten = am_hal_ios_fifo_write((uint8_t *)i16PDMBuf[(u32PDMpg-1)%2], AM_TEST_REF_BUF_SIZE*2/4);
 
 			
 

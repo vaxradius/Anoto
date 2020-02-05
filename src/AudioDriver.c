@@ -2,6 +2,8 @@
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
+#include "sbc.h" 
+
 #ifndef gcc
 #define CHANNEL_BLOCK_SIZE_IN_SAMPLES   (35*1024)
 int16_t i16RAW[CHANNEL_BLOCK_SIZE_IN_SAMPLES];
@@ -12,6 +14,22 @@ bool print_flag = 0;
 
 #define FIFOTHR 		64
 #define BUF_SIZE		128
+
+#define SBC_IN_RING_BUFF_SIZE           (BUF_SIZE*2)
+
+//
+// If using SBC compression, select audio transfer compression ratio
+// 1:1 = 256000 bps, 4:1 = 64000 bps, 8:1 = 32000 bps, 16:1 = 16000 bps
+//
+#define SBC_BLUEZ_COMPRESS_BPS          64000
+#define SBC_OUT_RING_BUFF_SIZE          (SBC_BLUEZ_COMPRESS_BPS / 1000)
+
+#define CODEC_IN_RING_BUFF_SIZE     SBC_IN_RING_BUFF_SIZE
+#define CODEC_OUT_RING_BUFF_SIZE    SBC_OUT_RING_BUFF_SIZE
+
+int8_t codecInputBuffer[CODEC_IN_RING_BUFF_SIZE];
+uint8_t codecOutputBuffer[CODEC_OUT_RING_BUFF_SIZE];
+sbc_t   g_BluezSBCInstance;
 
 volatile bool g_bPDMDataReady = false;
 int16_t i16PDMBuf[2][BUF_SIZE] = {{0},{0}};
@@ -29,6 +47,21 @@ void nr_process(uint32_t u32PDMpg)
 	for (int i = 0; i < BUF_SIZE; ++i)
 		i16PDMBuf[(u32PDMpg-1)%2][i] = (g_buffer[i]);
 }
+
+void SBC_init(void)
+{
+	sbc_encode_init(&g_BluezSBCInstance, 0);  //0: SBC
+	g_BluezSBCInstance.endian = SBC_LE;
+}
+
+void SBC_process(uint32_t u32PDMpg)
+{
+	int32_t CompressedLen;
+	sbc_encoder_encode(&g_BluezSBCInstance, i16PDMBuf[(u32PDMpg-1)%2], CODEC_IN_RING_BUFF_SIZE, 
+                          	      (void *)codecOutputBuffer, CODEC_OUT_RING_BUFF_SIZE, &CompressedLen);
+	memcpy(i16PDMBuf[(u32PDMpg-1)%2],(codecOutputBuffer),CODEC_OUT_RING_BUFF_SIZE);
+}
+
 #ifndef gcc
 void print_audio_data(void)
 {

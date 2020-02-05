@@ -392,6 +392,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\AudioDriver.c</FilePath>
             </File>
+            <File>
+              <FileName>sbc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\sbc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
