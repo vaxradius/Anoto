@@ -534,6 +534,13 @@ itm_start(void)
     am_util_stdio_terminal_clear();
 }
 
+
+void FwNLibVersionConfig(int16_t FwVer, int16_t LibVer)
+{
+	*(int16_t *)(am_hal_ios_pui8LRAM+4) = FwVer;
+	*(int16_t *)(am_hal_ios_pui8LRAM+6) = LibVer;
+}
+
 //*****************************************************************************
 //
 // Main function.
@@ -590,6 +597,7 @@ main(void)
     // Enable the IOS. Choose the correct protocol based on USE_SPI
     //
     ios_set_up(USE_SPI);
+    FwNLibVersionConfig(-19, -48);
     SBC_init();
 
     //start_sensors();
