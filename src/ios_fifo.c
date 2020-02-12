@@ -563,7 +563,7 @@ main(void)
     //
     // Initialize the printf interface for ITM/SWO output.
     //
-    itm_start();
+    //itm_start();
 
 #if 0 // For Debug only
     //
@@ -640,7 +640,8 @@ main(void)
 			//
 			// Go to Deep Sleep.
 			//
-			am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_NORMAL);
+			//am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_NORMAL);
+			am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
 			// Enable the interrupts
 			am_hal_interrupt_master_set(ui32IntStatus);
 		}
