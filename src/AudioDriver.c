@@ -283,25 +283,6 @@ uart_init(uint32_t ui32Module)
 
 void PDMinit(void)
 {	
-
-#if 0
-	//
-	// Select a UART module to use.
-	//
-	uint32_t ui32Module = AM_BSP_UART_PRINT_INST;
-
-	//
-	// Initialize the printf interface for UART output.
-	//
-	am_util_stdio_printf_init((am_util_stdio_print_char_t)am_bsp_uart_string_print);
-
-	//
-	// Configure and enable the UART.
-	//
-	uart_init(ui32Module);
-#endif
-
-
 	//
 	// Enable power to PDM module and configure PDM
 	//
@@ -345,5 +326,38 @@ void PDMinit(void)
 	//
 	am_hal_pdm_enable();	
 
-}   // End BoardInit
+} 
 
+
+void PDMdeinit(void)
+{	
+
+	//
+	// Disable the PDM.
+	//
+	am_hal_pdm_disable();
+
+	//
+	// Disable interrupts PDM
+	//
+	am_hal_pdm_int_disable(AM_HAL_PDM_INT_FIFO | AM_HAL_PDM_INT_UNDFL | AM_HAL_PDM_INT_OVF);
+	am_hal_interrupt_disable(AM_HAL_INTERRUPT_PDM);  //NVIC setting
+
+	//
+	// Clear PDM Interrupt (write to clear).
+	//
+	AM_REG(PDM, INTCLR) = AM_HAL_PDM_INT_FIFO | AM_HAL_PDM_INT_UNDFL | AM_HAL_PDM_INT_OVF;
+
+	//
+	// Configure the PDM microphone pins as HiZ
+	//
+	am_hal_gpio_pin_config(12, AM_HAL_PIN_DISABLE); // Configure GP12 as disable
+	am_hal_gpio_pin_config(11, AM_HAL_PIN_DISABLE);  // Configure GP11 as disable	
+
+	//
+	// Disable power to PDM module 
+	//
+	am_hal_pwrctrl_periph_disable(AM_HAL_PWRCTRL_PDM);	
+	
+
+}

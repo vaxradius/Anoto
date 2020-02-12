@@ -429,17 +429,12 @@ am_ioslave_acc_isr(void)
         switch(pui8Packet[0])
         {
             case AM_IOSTEST_CMD_START_DATA:
-                // Host wants to start data exchange
-                // Start the Sensor Emulation
-                //start_sensors();
                 PDMinit();
                 break;
 
             case AM_IOSTEST_CMD_STOP_DATA:
-                // Host no longer interested in data from us
-                // Stop the Sensor emulation
-                //stop_sensors();
-                //g_iosState = AM_IOSTEST_SLAVE_STATE_NODATA;
+                PDMdeinit();
+                g_iosState = AM_IOSTEST_SLAVE_STATE_NODATA;
                 break;
 
             case AM_IOSTEST_CMD_ACK_DATA:
