@@ -95,6 +95,8 @@
 #include "am_bsp.h"
 #include "am_util.h"
 
+#define     FW_VER	2
+
 #define     USE_SPI             1   // 0 = I2C, 1 = SPI
 #define     I2C_ADDR            0x10
 
@@ -535,10 +537,26 @@ itm_start(void)
 }
 
 
-void FwNLibVersionConfig(int16_t FwVer, int16_t LibVer)
+void VersionConfig(void)
 {
-	*(int16_t *)(am_hal_ios_pui8LRAM+4) = FwVer;
-	*(int16_t *)(am_hal_ios_pui8LRAM+6) = LibVer;
+	
+#ifdef gcc
+	int16_t ret;
+	int16_t LibVer;
+
+	/*return 1 means Licence key verification is OK */
+	ret = getVersion(&LibVer);
+	if(ret == 1)
+		*(int16_t *)(am_hal_ios_pui8LRAM+6) = LibVer;// Relajet NR Version
+	else
+		*(int16_t *)(am_hal_ios_pui8LRAM+6) = -1;// Licence key verification failed
+
+#else
+	*(int16_t *)(am_hal_ios_pui8LRAM+6) = 0;//Without Relajet NR
+#endif
+	*(int16_t *)(am_hal_ios_pui8LRAM+4) = FW_VER;
+	
+
 }
 
 //*****************************************************************************
@@ -597,7 +615,9 @@ main(void)
     // Enable the IOS. Choose the correct protocol based on USE_SPI
     //
     ios_set_up(USE_SPI);
-    FwNLibVersionConfig(-19, -48);
+
+    VersionConfig();
+
     SBC_init();
 
     //start_sensors();

@@ -128,7 +128,7 @@ DEPS+= $(ASRC:%.s=$(CONFIG)/%.d)
 LIBS = ../../../../../mcu/apollo2/hal/gcc/bin/libam_hal.a
 LIBS += ../../../bsp/gcc/bin/libam_bsp.a
 LIBS += ../lib/libarm_cortexM4lf_math_NN.a
-LIBS += ../lib/librelajetnn_all.a
+LIBS += ../lib/librelajetnn.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 CFLAGS+= -ffunction-sections -fdata-sections
