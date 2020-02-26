@@ -459,7 +459,7 @@ am_ioslave_acc_isr(void)
                 I2Sinit();
 		   break;
 		   
-		case AM_IOSTEST_CMD_ENABLE_I2S:
+		case AM_IOSTEST_CMD_DISABLE_I2S:
                 I2Sdeinit();
 		   break;
 		   
