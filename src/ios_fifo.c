@@ -125,6 +125,8 @@ typedef enum
     AM_IOSTEST_CMD_START_DATA    = 0,
     AM_IOSTEST_CMD_STOP_DATA     = 1,
     AM_IOSTEST_CMD_ACK_DATA      = 2,
+    AM_IOSTEST_CMD_ENABLE_I2S    = 3,
+    AM_IOSTEST_CMD_DISABLE_I2S     = 4,
 } AM_IOSTEST_CMD_E;
 
 #define AM_IOSTEST_IOSTOHOST_DATAAVAIL_INTMASK  1
@@ -452,7 +454,15 @@ am_ioslave_acc_isr(void)
                     g_iosState = AM_IOSTEST_SLAVE_STATE_NODATA;
                 }
                 break;
-
+				
+		case AM_IOSTEST_CMD_ENABLE_I2S:
+                I2Sinit();
+		   break;
+		   
+		case AM_IOSTEST_CMD_ENABLE_I2S:
+                I2Sdeinit();
+		   break;
+		   
             default:
                 break;
         }
