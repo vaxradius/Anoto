@@ -234,7 +234,7 @@ void I2Spassthrough(void)
 		(
 			AM_HAL_PDM_PCFG_LRSWAP_DISABLE      |
 			AM_HAL_PDM_PCFG_RIGHT_PGA_P105DB    |	
-			AM_HAL_PDM_PCFG_RIGHT_PGA_P105DB     |	
+			AM_HAL_PDM_PCFG_LEFT_PGA_P105DB     |	
 			AM_HAL_PDM_PCFG_MCLKDIV_DIV1        |	
 			AM_HAL_PDM_PCFG_SINC_RATE(32)       |   // over sample rate (decimation) 1MHz /32 /2 = 15.625KHz
 			AM_HAL_PDM_PCFG_HPCUTOFF(0xB)       |
